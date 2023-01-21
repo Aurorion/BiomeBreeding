@@ -38,8 +38,9 @@ public class Utils {
     public void removeAnimal(String animal, String biome) {
         if (biome.equalsIgnoreCase("all")) {
             this.getCache().remove(animal);
+        } else {
+            this.getCache().get(animal).remove(biome);
         }
-        this.getCache().get(animal).remove(biome);
     }
 
 }

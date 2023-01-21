@@ -106,7 +106,9 @@ public class BreedCommand implements CommandExecutor, TabCompleter {
                 completions.addAll(main.getUtils().getCache().keySet());
             }
             if (args.length == 3) {
-                completions.addAll(main.getUtils().getCache().get(args[2].toLowerCase()));
+                if (main.getUtils().getCache().containsKey(args[1].toLowerCase())) {
+                    completions.addAll(main.getUtils().getCache().get(args[1].toLowerCase()));
+                }
             }
         }
 
