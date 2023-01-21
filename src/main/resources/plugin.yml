@@ -1,0 +1,9 @@
+name: BiomeBreeding
+version: '${project.version}'
+main: me.aurorion.biomebreeding.Main
+api-version: 1.19
+authors: [ Aurorion ]
+description: Limits breeding to biomes
+commands:
+  biomebreed:
+    aliases: [bb]
