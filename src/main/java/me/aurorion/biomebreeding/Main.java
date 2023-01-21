@@ -1,7 +1,7 @@
 package me.aurorion.biomebreeding;
 
 import me.aurorion.biomebreeding.commands.BreedCommand;
-import me.aurorion.biomebreeding.listeners.BreedEvent;
+import me.aurorion.biomebreeding.events.BreedEvent;
 import me.aurorion.biomebreeding.system.Files;
 import me.aurorion.biomebreeding.system.Utils;
 import net.kyori.adventure.text.Component;
@@ -21,6 +21,7 @@ public final class Main extends JavaPlugin {
 
     @Override
     public void onEnable() {
+        /* --- Startup logic --- */
         this.buildMiniMessage();
         this.registerClasses();
         this.registerCommands();
@@ -30,14 +31,11 @@ public final class Main extends JavaPlugin {
 
     @Override
     public void onDisable() {
-        if (!this.getUtils().getCache().isEmpty()) {
-            for (String animals : this.getUtils().getCache().keySet()) {
-                this.getFiles().getSettings().set(animals, getUtils().getCache().get(animals));
-            }
-        }
-        this.getFiles().saveSettings();
+        /* --- Shutdown logic --- */
+        this.cacheSettings();
     }
 
+    /* --- Build MiniMessage for simple formatting --- */
     private void buildMiniMessage() {
         this.mm = MiniMessage.builder().tags(TagResolver.builder()
                 .resolver(TagResolver.standard())
@@ -48,6 +46,7 @@ public final class Main extends JavaPlugin {
                 .build()).build();
     }
 
+    /* --- Registering of Classes, Command and Events --- */
     private void registerClasses() {
         this.files = new Files(this);
         this.utils = new Utils();
@@ -64,11 +63,23 @@ public final class Main extends JavaPlugin {
         pm.registerEvents(new BreedEvent(this), this);
     }
 
+    /* --- Cache the data in the file to a hashmap for simple performance --- */
     private void cacheSettings() {
-        for (String animals : this.getFiles().getSettings().getKeys(false)) {
-            this.getUtils().getCache().put(animals, new ArrayList<>());
-            for (String biomes : this.getFiles().getSettings().getStringList(animals)) {
-                this.getUtils().getCache().get(animals).add(biomes);
+        if (this.getServer().isStopping()) {
+            if (!this.getUtils().getCache().isEmpty()) {
+                for (String animals : this.getUtils().getCache().keySet()) {
+                    this.getFiles().getSettings().set(animals, getUtils().getCache().get(animals));
+                }
+            }
+            this.getFiles().saveSettings();
+
+        } else {
+
+            for (String animals : this.getFiles().getSettings().getKeys(false)) {
+                this.getUtils().getCache().put(animals, new ArrayList<>());
+                for (String biomes : this.getFiles().getSettings().getStringList(animals)) {
+                    this.getUtils().getCache().get(animals).add(biomes);
+                }
             }
         }
     }
